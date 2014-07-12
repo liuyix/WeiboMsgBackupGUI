@@ -86,4 +86,3 @@ class MainAction():
         userSearch = UserSearchThread(searchName, window)
         userSearch.start()
         userSearch.join()
-        

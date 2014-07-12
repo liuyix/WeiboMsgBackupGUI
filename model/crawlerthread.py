@@ -253,4 +253,3 @@ class CrawlerThread(threading.Thread):
             msg = (u"CopyMsgDat2Csv Error %s happened on line %d" % (s[1]
                                                                      ,s[2].tb_lineno))
             logger.error(msg)
-            

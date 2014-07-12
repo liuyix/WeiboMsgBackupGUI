@@ -36,7 +36,11 @@ class UserConfig():
     def __init__(self, rootPath=""):
         self.config=ConfigParser.ConfigParser()
         self.rootPath = rootPath
-        self.configPath = "file\\config.ini"
+        if rootPath is None or rootPath == '':
+            self.rootPath = os.path.dirname(__file__)
+        logger.info('root path: {path}'.format(path=self.rootPath))
+        self.configPath = os.path.join(self.rootPath, 'config.ini')
+
         
     def WriteUserConfig(self, _type, value):
         try:

@@ -37,7 +37,6 @@ from model.userconfig import UserConfig
 from model import syscontext
 from model.images import AppIcon
 from model.startimg import StartImg
-import win32con
 import wx.lib.agw.hyperlink as hl
 from frame.verifycodeframe import VerifyCodeFrame
 
@@ -100,23 +99,31 @@ class LoginFrame(wx.Frame):
             self.Bind(wx.EVT_BUTTON, self.Cancel, cancelBtn)
             
             self.Bind(wx.EVT_TEXT_ENTER, self.KeyPress, pwText)
+            self.hotKeyId = None
             self.regHotKey()
-            self.Bind(wx.EVT_HOTKEY, self.handleHotKey, id=self.hotKeyId)
+            if self.hotKeyId is not None:
+                self.Bind(wx.EVT_HOTKEY, self.handleHotKey, id=self.hotKeyId)
         except:
             s=sys.exc_info()
             msg = (u"Login frame Error %s happened on line %d" % (s[1],s[2].tb_lineno))
             wx.MessageBox(msg)
-            return False
+            return None
     def regHotKey(self):
         """
-        This function registers the hotkey Ctrl + F12 with id
+        Windows dependent:
+            This function registers the hotkey Ctrl + F12 with id
         """
-        self.hotKeyId = wx.NewId()
-        self.RegisterHotKey(
-            self.hotKeyId, #a unique ID for this hotkey
-            win32con.MOD_CONTROL, #the modifier key
-            win32con.VK_F12) #the key to watch for
-        
+        if sys.platform == 'Windows':
+            try:
+                import win32con
+                self.hotKeyId = wx.NewId()
+                self.RegisterHotKey(
+                    self.hotKeyId, #a unique ID for this hotkey
+                    win32con.MOD_CONTROL, #the modifier key
+                    win32con.VK_F12) #the key to watch for
+            except:
+                pass
+
     def handleHotKey(self, evt):
         if self.ConfirmDialog(u"确定开启Debug模式?!将会记录程序详细运行日志.") == wx.ID_YES:
             syscontext.userentity["debug"] = True
@@ -193,4 +200,3 @@ class LoginFrame(wx.Frame):
                                )
         msgDlg.ShowModal()
         msgDlg.Destroy()
-        
